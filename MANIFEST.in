@@ -1,14 +1,14 @@
 include LICENSE
 include README.md
-include CHANGELOG.md
 include CONTRIBUTING.md
+include CHANGELOG.md
 
 recursive-include docs *
 recursive-include assets *
+recursive-include src/dev_foundation/templates *
+
+global-exclude *.py[cod]
+global-exclude .DS_Store
 
 prune build
 prune dist
-
-global-exclude .DS_Store
-global-exclude *.py[cod]
-global-exclude __pycache__
