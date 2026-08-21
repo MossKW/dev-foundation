@@ -6,4 +6,14 @@ build-backend = "setuptools.build_meta"
 name = "{{ project_name }}"
 version = "0.1.0"
 description = ""
+readme = "README.md"
 requires-python = ">=3.11"
+
+[project.scripts]
+{{ project_name }} = "{{ package_name }}.__main__:main"
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
