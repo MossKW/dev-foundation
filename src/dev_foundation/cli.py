@@ -1,6 +1,7 @@
 import argparse
 
 from .doctor import doctor_report
+from .init import cmd_init
 from .version import __version__
 
 
@@ -38,5 +39,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show environment information.",
     )
     doctor_parser.set_defaults(func=cmd_doctor)
+
+    init_parser = subparsers.add_parser(
+        "init",
+        help="Initialize a new project.",
+    )
+    init_parser.add_argument(
+        "name",
+        help="Project name.",
+    )
+    init_parser.set_defaults(func=cmd_init)
 
     return parser
