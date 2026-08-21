@@ -1,6 +1,7 @@
 import argparse
 
 from . import __version__
+from .doctor import doctor_report
 
 
 def cmd_version(_: argparse.Namespace) -> int:
@@ -25,7 +26,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show package version.",
     )
     version_parser.set_defaults(func=cmd_version)
-
+    doctor_parser = subparsers.add_parser(
+        "doctor",
+        help="Show environment information.",
+    )
+    doctor_parser.set_defaults(func=cmd_doctor)
     return parser
 
 
@@ -37,6 +42,12 @@ def main(argv: list[str] | None = None) -> int:
         return args.func(args)
 
     parser.print_help()
+    return 0
+
+
+def cmd_doctor(_: argparse.Namespace) -> int:
+    """Show environment information."""
+    print(doctor_report())
     return 0
 
 
