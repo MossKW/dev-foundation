@@ -8,10 +8,14 @@ def test_cli_init(tmp_path, monkeypatch, capsys) -> None:
 
     captured = capsys.readouterr()
 
+    project = tmp_path / "my-project"
+
     assert exit_code == 0
 
     assert "Created project:" in captured.out
 
-    assert (tmp_path / "my-project").exists()
+    assert project.exists()
+    assert project.is_dir()
 
-    assert (tmp_path / "my-project").is_dir()
+    assert (project / "src").is_dir()
+    assert (project / "tests").is_dir()
