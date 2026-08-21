@@ -1,5 +1,8 @@
-# Python virtual environment
+# Python
 .venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
 
-#MacOS
+# macOS
 .DS_Store
