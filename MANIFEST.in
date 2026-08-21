@@ -1,0 +1,14 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+recursive-include docs *
+recursive-include assets *
+
+prune build
+prune dist
+
+global-exclude .DS_Store
+global-exclude *.py[cod]
+global-exclude __pycache__

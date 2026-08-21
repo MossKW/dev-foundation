@@ -4,5 +4,10 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
 # macOS
 .DS_Store
