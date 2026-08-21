@@ -48,4 +48,3 @@ Dev Foundation exists to eliminate that repetition by providing a reusable engin
 
 ```text
 dev-foundation/
-
