@@ -15,13 +15,14 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
     "pytest>=8",
+    "coverage[toml]>=7",
     "ruff",
     "black",
     "pre-commit",
 ]
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -44,3 +45,11 @@ select = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.coverage.run]
+branch = true
+source = ["dev_foundation"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
