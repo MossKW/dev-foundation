@@ -1,3 +1,5 @@
+from unittest.mock import Mock, patch
+
 from dev_foundation.blueprint import PythonBlueprint
 from dev_foundation.command_registry import commands
 from dev_foundation.commands.doctor import DoctorCommand
@@ -27,3 +29,16 @@ def test_command_registry() -> None:
     assert isinstance(registered[0], VersionCommand)
     assert isinstance(registered[1], DoctorCommand)
     assert isinstance(registered[2], InitCommand)
+
+
+@patch("dev_foundation.command_registry.entry_points")
+def test_command_registry_plugins(mock_entry_points) -> None:
+    plugin = Mock()
+    plugin.load.return_value = VersionCommand
+
+    mock_entry_points.return_value = [plugin]
+
+    registered = commands()
+
+    assert len(registered) == 4
+    assert isinstance(registered[-1], VersionCommand)
