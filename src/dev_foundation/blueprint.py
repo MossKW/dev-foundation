@@ -6,8 +6,8 @@ from pathlib import Path
 
 from .blueprints.base import Blueprint
 from .generated_file import GeneratedFile
+from .generator import ProjectGenerator
 from .template_loader import render_template
-from .writer import ProjectWriter
 
 
 class PythonBlueprint(Blueprint):
@@ -24,8 +24,6 @@ class PythonBlueprint(Blueprint):
             "project_name": project_name,
             "package_name": package_name,
         }
-
-        writer = ProjectWriter()
 
         src_dir = project_dir / "src" / package_name
         tests_dir = project_dir / "tests"
@@ -60,5 +58,4 @@ class PythonBlueprint(Blueprint):
             ),
         ]
 
-        for file in files:
-            writer.write_file(file)
+        ProjectGenerator().generate(files)
