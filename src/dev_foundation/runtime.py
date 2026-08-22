@@ -22,9 +22,7 @@ class Runtime:
 
     def startup(self) -> None:
         """Initialize the runtime."""
-        # Force registry initialization early so the runtime owns them.
-        self.context.command_registry.commands()
-        self.context.blueprint_registry.blueprints()
+        self.context.lifecycle.startup()
 
     def discover_plugins(self) -> None:
         """Discover available plugins."""
@@ -32,7 +30,6 @@ class Runtime:
 
     def register_capabilities(self) -> None:
         """Register plugin capabilities."""
-        # Placeholder for future plugin registration.
         pass
 
     def validate(self) -> None:
@@ -45,4 +42,4 @@ class Runtime:
 
     def shutdown(self) -> None:
         """Shut down the runtime."""
-        pass
+        self.context.lifecycle.shutdown()
