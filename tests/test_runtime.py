@@ -1,13 +1,46 @@
+from dev_foundation.lifecycle import Lifecycle
+from dev_foundation.plugin_manager import PluginManager
 from dev_foundation.runtime import Runtime
 
 
-def test_runtime_instantiation() -> None:
+def test_runtime_has_context():
     runtime = Runtime()
 
-    assert runtime is not None
+    assert runtime.context is not None
 
 
-def test_runtime_run() -> None:
+def test_runtime_uses_container_services(monkeypatch):
     runtime = Runtime()
+
+    plugin_manager = runtime.context.container.resolve(
+        PluginManager,
+    )
+    lifecycle = runtime.context.container.resolve(
+        Lifecycle,
+    )
+
+    called = []
+
+    monkeypatch.setattr(
+        lifecycle,
+        "startup",
+        lambda: called.append("startup"),
+    )
+    monkeypatch.setattr(
+        plugin_manager,
+        "discover",
+        lambda: called.append("discover"),
+    )
+    monkeypatch.setattr(
+        lifecycle,
+        "shutdown",
+        lambda: called.append("shutdown"),
+    )
 
     runtime.run()
+
+    assert called == [
+        "startup",
+        "discover",
+        "shutdown",
+    ]

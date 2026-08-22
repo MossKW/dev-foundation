@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .lifecycle import Lifecycle
+from .plugin_manager import PluginManager
 from .runtime_context import RuntimeContext
 
 
@@ -22,11 +24,15 @@ class Runtime:
 
     def startup(self) -> None:
         """Initialize the runtime."""
-        self.context.lifecycle.startup()
+        self.context.container.resolve(
+            Lifecycle,
+        ).startup()
 
     def discover_plugins(self) -> None:
         """Discover available plugins."""
-        self.context.plugin_manager.discover()
+        self.context.container.resolve(
+            PluginManager,
+        ).discover()
 
     def register_capabilities(self) -> None:
         """Register plugin capabilities."""
@@ -42,4 +48,6 @@ class Runtime:
 
     def shutdown(self) -> None:
         """Shut down the runtime."""
-        self.context.lifecycle.shutdown()
+        self.context.container.resolve(
+            Lifecycle,
+        ).shutdown()
