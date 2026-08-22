@@ -9,39 +9,28 @@ from dev_foundation.commands.plugins import PluginsCommand
 from dev_foundation.commands.version import VersionCommand
 from dev_foundation.plugins.loader import PluginLoader
 
-_COMMANDS: list[type[Command]] = [
-    VersionCommand,
-    DoctorCommand,
-    InitCommand,
-]
-
-_COMMANDS = [
+_COMMANDS: tuple[type[Command], ...] = (
     VersionCommand,
     DoctorCommand,
     InitCommand,
     PluginsCommand,
-]
+)
 
 
 def _plugin_commands() -> list[type[Command]]:
     """Load command plugins from entry points."""
 
-    discovered: list[type[Command]] = []
-
     loader = PluginLoader()
 
-    for ep in loader.discover():
-        discovered.append(ep.load())
-
-    return discovered
+    return [entry_point.load() for entry_point in loader.discover()]
 
 
 def commands() -> list[Command]:
     """Return instantiated commands."""
 
-    command_types = [
+    command_types = (
         *_COMMANDS,
         *_plugin_commands(),
-    ]
+    )
 
     return [command() for command in command_types]
