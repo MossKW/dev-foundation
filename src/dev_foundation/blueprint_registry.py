@@ -6,17 +6,15 @@ from dev_foundation.blueprint import PythonBlueprint
 from dev_foundation.blueprints.base import Blueprint
 from dev_foundation.blueprints.loader import BlueprintLoader
 
-_BLUEPRINTS: list[type[Blueprint]] = [
-    PythonBlueprint,
-]
+_BLUEPRINTS: tuple[type[Blueprint], ...] = (PythonBlueprint,)
 
 
 def blueprints() -> list[Blueprint]:
     """Return instantiated blueprints."""
 
-    blueprint_types = [
+    blueprint_types = (
         *_BLUEPRINTS,
         *BlueprintLoader().load(),
-    ]
+    )
 
     return [blueprint() for blueprint in blueprint_types]
