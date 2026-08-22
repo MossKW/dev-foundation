@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from .blueprints.base import Blueprint
+from .generated_file import GeneratedFile
 from .template_loader import render_template
 from .writer import ProjectWriter
 
@@ -32,32 +33,32 @@ class PythonBlueprint(Blueprint):
         src_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
 
-        writer.write(
-            project_dir / "README.md",
-            render_template("README.md", context),
-        )
+        files = [
+            GeneratedFile(
+                path=project_dir / "README.md",
+                content=render_template("README.md", context),
+            ),
+            GeneratedFile(
+                path=project_dir / "pyproject.toml",
+                content=render_template("pyproject.toml.tmpl", context),
+            ),
+            GeneratedFile(
+                path=project_dir / ".gitignore",
+                content=render_template("gitignore.txt", context),
+            ),
+            GeneratedFile(
+                path=src_dir / "__init__.py",
+                content=render_template("package_init.py.tmpl", context),
+            ),
+            GeneratedFile(
+                path=src_dir / "__main__.py",
+                content=render_template("package_main.py.tmpl", context),
+            ),
+            GeneratedFile(
+                path=tests_dir / "__init__.py",
+                content="",
+            ),
+        ]
 
-        writer.write(
-            project_dir / "pyproject.toml",
-            render_template("pyproject.toml.tmpl", context),
-        )
-
-        writer.write(
-            project_dir / ".gitignore",
-            render_template("gitignore.txt", context),
-        )
-
-        writer.write(
-            src_dir / "__init__.py",
-            render_template("package_init.py.tmpl", context),
-        )
-
-        writer.write(
-            src_dir / "__main__.py",
-            render_template("package_main.py.tmpl", context),
-        )
-
-        writer.write(
-            tests_dir / "__init__.py",
-            "",
-        )
+        for file in files:
+            writer.write_file(file)
