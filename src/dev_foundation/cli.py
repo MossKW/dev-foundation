@@ -1,8 +1,6 @@
 import argparse
 
-from .commands.doctor import DoctorCommand
-from .commands.init import InitCommand
-from .commands.version import VersionCommand
+from .command_registry import commands
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -16,9 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="COMMAND",
     )
 
-    # Built-in commands
-    VersionCommand().register(subparsers)
-    DoctorCommand().register(subparsers)
-    InitCommand().register(subparsers)
+    for command in commands():
+        command.register(subparsers)
 
     return parser
