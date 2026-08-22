@@ -5,6 +5,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from ..generator import ProjectGenerator
+
 
 class Blueprint(ABC):
     """Base class for project blueprints."""
@@ -16,5 +18,6 @@ class Blueprint(ABC):
         self,
         project_name: str,
         project_dir: Path,
+        generator: ProjectGenerator,
     ) -> None:
         """Generate the project."""

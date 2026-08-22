@@ -1,12 +1,17 @@
 from pathlib import Path
 
 from dev_foundation.blueprint import PythonBlueprint
+from dev_foundation.generator import ProjectGenerator
 
 
 def test_python_blueprint(tmp_path: Path) -> None:
     blueprint = PythonBlueprint()
 
-    blueprint.render("demo-project", tmp_path)
+    blueprint.render(
+        "demo-project",
+        tmp_path,
+        ProjectGenerator(),
+    )
 
     assert (tmp_path / "README.md").exists()
     assert (tmp_path / "pyproject.toml").exists()

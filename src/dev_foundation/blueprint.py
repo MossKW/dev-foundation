@@ -15,7 +15,12 @@ class PythonBlueprint(Blueprint):
 
     name = "python"
 
-    def render(self, project_name: str, project_dir: Path) -> None:
+    def render(
+        self,
+        project_name: str,
+        project_dir: Path,
+        generator: ProjectGenerator,
+    ) -> None:
         """Generate a Python project."""
 
         package_name = project_name.replace("-", "_")
@@ -58,4 +63,4 @@ class PythonBlueprint(Blueprint):
             ),
         ]
 
-        ProjectGenerator().generate(files)
+        generator.generate(files)
