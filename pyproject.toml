@@ -31,6 +31,14 @@ dev = [
 [project.scripts]
 dev-foundation = "dev_foundation.__main__:main"
 
+[project.entry-points."dev_foundation.commands"]
+version = "dev_foundation.commands.version:VersionCommand"
+doctor = "dev_foundation.commands.doctor:DoctorCommand"
+init = "dev_foundation.commands.init:InitCommand"
+
+[project.entry-points."dev_foundation.blueprints"]
+python = "dev_foundation.blueprint:PythonBlueprint"
+
 [tool.setuptools]
 package-dir = { "" = "src" }
 

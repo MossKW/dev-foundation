@@ -53,3 +53,16 @@ def test_blueprint_registry() -> None:
 
     assert len(registered) == 1
     assert isinstance(registered[0], PythonBlueprint)
+
+
+@patch("dev_foundation.blueprints.loader.entry_points")
+def test_blueprint_registry_plugins(mock_entry_points) -> None:
+    plugin = Mock()
+    plugin.load.return_value = PythonBlueprint
+
+    mock_entry_points.return_value = [plugin]
+
+    registered = blueprints()
+
+    assert len(registered) == 2
+    assert isinstance(registered[-1], PythonBlueprint)
