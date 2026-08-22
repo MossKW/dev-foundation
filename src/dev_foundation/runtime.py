@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from .plugin_manager import PluginManager
+from .runtime_context import RuntimeContext
 
 
 class Runtime:
     """Coordinates platform execution."""
 
     def __init__(self) -> None:
-        self.plugin_manager = PluginManager()
+        self.context = RuntimeContext()
 
     def run(self) -> None:
         """Execute the runtime lifecycle."""
@@ -26,7 +26,7 @@ class Runtime:
 
     def discover_plugins(self) -> None:
         """Discover available plugins."""
-        self.plugin_manager.discover()
+        self.context.plugin_manager.discover()
 
     def register_capabilities(self) -> None:
         """Register plugin capabilities."""
