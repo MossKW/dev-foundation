@@ -3,15 +3,23 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, ClassVar
+
+if TYPE_CHECKING:
+    from dev_foundation.runtime_context import RuntimeContext
 
 
 class BasePlugin(ABC):
-    """Abstract base class for framework plugins."""
+    """Base class for all plugins."""
+
+    name: ClassVar[str] = "plugin"
+    version: ClassVar[str] = "0.1.0"
+    description: ClassVar[str] = ""
+    author: ClassVar[str] = ""
 
     @abstractmethod
     def register(
         self,
-        context: Any,
+        context: RuntimeContext,
     ) -> None:
-        """Register the plugin with the runtime context."""
+        """Register plugin services."""
