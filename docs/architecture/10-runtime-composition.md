@@ -2,7 +2,7 @@
 
 **Status:** Draft
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Applies To:** dev-foundation
 
@@ -12,11 +12,12 @@
 
 This document defines how the runtime is composed.
 
-Unlike previous documents that define responsibilities and contracts,
-this document specifies how the runtime object graph is organized and
-how runtime services collaborate during execution.
+Unlike previous architecture documents, this specification describes
+the runtime object graph and the ownership relationships between
+runtime components.
 
-The runtime composition acts as the blueprint for the implementation.
+The runtime composition serves as the implementation blueprint for the
+platform core.
 
 ---
 
@@ -27,21 +28,17 @@ The runtime should be:
 - Simple
 - Predictable
 - Extensible
+- Loosely Coupled
 - Testable
-- Loosely coupled
 
-The runtime should coordinate services instead of implementing
-business logic.
+The runtime coordinates services instead of implementing
+domain-specific logic.
 
 ---
 
 # Runtime Responsibilities
 
-The Runtime is responsible for coordinating platform execution.
-
-It owns the execution lifecycle and orchestrates all runtime services.
-
-The Runtime should never implement domain-specific behavior.
+The Runtime coordinates platform execution.
 
 Responsibilities include:
 
@@ -52,19 +49,17 @@ Responsibilities include:
 - validation
 - command dispatch
 
+The Runtime owns the execution lifecycle but does not own platform
+state directly.
+
 ---
 
 # Runtime Context
 
 The Runtime owns a single RuntimeContext.
 
-The RuntimeContext contains long-lived runtime services shared across
-the platform.
-
-The Runtime itself should avoid holding many independent service
-instances directly.
-
-Instead:
+RuntimeContext contains the shared runtime state and long-lived
+platform services.
 
 ```
 Runtime
@@ -73,45 +68,39 @@ Runtime
 RuntimeContext
 ```
 
+The RuntimeContext exists to prevent the Runtime from accumulating
+large numbers of dependencies.
+
 ---
 
 # RuntimeContext Responsibilities
 
-RuntimeContext is responsible for owning platform services.
+RuntimeContext owns shared runtime objects.
 
-Typical responsibilities include:
+Current responsibilities include:
 
-- Plugin management
-- Registry access
-- Workspace information
-- Configuration
-- Shared metadata
+- PluginManager
+- CommandRegistry
+- BlueprintRegistry
+- Workspace
 
-The RuntimeContext should not contain business logic.
+Future platform services should also be owned by the RuntimeContext.
 
----
-
-# Managers
-
-Managers encapsulate reusable platform services.
-
-Each manager has a single responsibility.
-
-Managers never coordinate the platform.
-
-Only the Runtime coordinates execution.
+The RuntimeContext does not coordinate execution.
 
 ---
 
-## PluginManager
+# PluginManager
 
-Responsible for:
+PluginManager is responsible for plugin behavior.
+
+Responsibilities include:
 
 - discovering plugins
 - loading plugins
 - validating plugins
 
-The PluginManager delegates low-level discovery to PluginLoader.
+PluginManager delegates discovery to PluginLoader.
 
 ```
 PluginManager
@@ -120,54 +109,64 @@ PluginManager
 PluginLoader
 ```
 
----
+PluginManager provides behavior.
 
-## RegistryManager
-
-Responsible for runtime registries.
-
-Possible registries include:
-
-- Commands
-- Plugins
-- Blueprints
-
-The RegistryManager owns registry state.
+It does not own platform state.
 
 ---
 
-## Workspace
+# Registries
+
+Registries are passive runtime objects.
+
+Registries own platform state.
+
+They do not coordinate execution.
+
+Current registries include:
+
+- CommandRegistry
+- BlueprintRegistry
+
+Future registries may include:
+
+- PluginRegistry
+- TemplateRegistry
+
+Registries expose registration and lookup operations.
+
+---
+
+# Workspace
 
 Workspace represents the active project environment.
 
-Responsibilities include:
+Typical responsibilities include:
 
 - project root
-- templates
-- cache
+- template locations
+- cache directory
 - generated output
 
-Workspace is independent from Runtime execution.
+Workspace stores environment information only.
 
 ---
 
 # Dispatcher
 
-The Dispatcher is responsible for executing commands.
+Dispatcher executes commands.
 
 Responsibilities include:
 
 - selecting commands
 - invoking commands
-- propagating execution context
+- propagating runtime context
 
-The Dispatcher should not own platform state.
+Dispatcher should not own runtime state.
 
 ---
 
 # Object Graph
-
-The runtime object graph is shown below.
 
 ```
 Application
@@ -178,19 +177,16 @@ Runtime
       ▼
 RuntimeContext
       │
- ┌────┼───────────────┐
- │    │               │
- ▼    ▼               ▼
-Plugin Registry   Workspace
-Manager Manager
+ ┌────┼─────────────────────────────────────┐
+ │    │                 │                  │
+ ▼    ▼                 ▼                  ▼
+PluginManager   CommandRegistry   BlueprintRegistry   Workspace
       │
       ▼
 PluginLoader
 ```
 
-Only Runtime owns RuntimeContext.
-
-Managers do not own each other.
+Ownership always flows downward.
 
 ---
 
@@ -208,21 +204,30 @@ Runtime
 RuntimeContext
       │
       ▼
-Managers
+Shared Objects
 ```
 
-Managers should never reference Runtime.
+The following rules apply.
 
-Managers should not depend on one another unless explicitly required.
+Runtime owns RuntimeContext.
 
-Communication between managers should occur through Runtime or
-RuntimeContext.
+RuntimeContext owns managers and registries.
+
+Managers provide behavior.
+
+Registries own state.
+
+Managers must not coordinate the platform.
+
+Registries must not invoke Runtime.
+
+Communication between runtime services should occur through Runtime.
 
 ---
 
 # Lifecycle
 
-Runtime executes services in the following order.
+Runtime executes the following sequence.
 
 ```
 startup()
@@ -230,10 +235,6 @@ startup()
 ↓
 
 discover plugins
-
-↓
-
-load plugins
 
 ↓
 
@@ -258,19 +259,20 @@ Each phase should be independently testable.
 
 # Future Evolution
 
-The RuntimeContext is expected to grow as the platform evolves.
+The RuntimeContext is expected to grow over time.
 
-Possible future services include:
+Possible future runtime objects include:
 
-- ConfigurationManager
+- Configuration
 - EventBus
-- ServiceContainer
-- TaskScheduler
-- CacheManager
+- Cache
 - Logger
 - Metrics
+- ServiceContainer
+- TaskScheduler
 
-Adding new services should not require changes to existing managers.
+New runtime objects should integrate through RuntimeContext without
+changing existing ownership rules.
 
 ---
 
@@ -278,10 +280,12 @@ Adding new services should not require changes to existing managers.
 
 The Runtime coordinates execution.
 
-The RuntimeContext owns runtime services.
+The RuntimeContext owns shared runtime objects.
 
-Managers own individual responsibilities.
+Managers provide behavior.
+
+Registries own state.
 
 Business logic belongs to plugins.
 
-This separation keeps the platform small, extensible, and maintainable.
+This separation keeps the platform modular, testable, and extensible.
