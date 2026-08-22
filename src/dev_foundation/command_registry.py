@@ -9,28 +9,39 @@ from dev_foundation.commands.plugins import PluginsCommand
 from dev_foundation.commands.version import VersionCommand
 from dev_foundation.plugins.loader import PluginLoader
 
-_COMMANDS: tuple[type[Command], ...] = (
-    VersionCommand,
-    DoctorCommand,
-    InitCommand,
-    PluginsCommand,
-)
 
+class CommandRegistry:
+    """Registry of available CLI commands."""
 
-def _plugin_commands() -> list[type[Command]]:
-    """Load command plugins from entry points."""
+    _BUILTIN_COMMANDS: tuple[type[Command], ...] = (
+        VersionCommand,
+        DoctorCommand,
+        InitCommand,
+        PluginsCommand,
+    )
 
-    loader = PluginLoader()
+    def plugin_commands(self) -> list[type[Command]]:
+        """Load command plugins from entry points."""
 
-    return [entry_point.load() for entry_point in loader.discover()]
+        loader = PluginLoader()
+
+        return [entry_point.load() for entry_point in loader.discover()]
+
+    def command_types(self) -> list[type[Command]]:
+        """Return all available command types."""
+
+        return [
+            *self._BUILTIN_COMMANDS,
+            *self.plugin_commands(),
+        ]
+
+    def commands(self) -> list[Command]:
+        """Return instantiated commands."""
+
+        return [command() for command in self.command_types()]
 
 
 def commands() -> list[Command]:
-    """Return instantiated commands."""
+    """Compatibility wrapper."""
 
-    command_types = (
-        *_COMMANDS,
-        *_plugin_commands(),
-    )
-
-    return [command() for command in command_types]
+    return CommandRegistry().commands()
