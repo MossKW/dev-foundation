@@ -1,12 +1,21 @@
+"""Built-in Python project blueprint."""
+
+from __future__ import annotations
+
 from pathlib import Path
 
+from .blueprints.base import Blueprint
 from .template_loader import render_template
 
 
-class PythonBlueprint:
+class PythonBlueprint(Blueprint):
     """Default Python project blueprint."""
 
+    name = "python"
+
     def render(self, project_name: str, project_dir: Path) -> None:
+        """Generate a Python project."""
+
         package_name = project_name.replace("-", "_")
 
         context = {

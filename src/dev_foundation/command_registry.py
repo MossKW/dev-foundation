@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from importlib.metadata import entry_points
-
 from dev_foundation.commands.base import Command
 from dev_foundation.commands.doctor import DoctorCommand
 from dev_foundation.commands.init import InitCommand
 from dev_foundation.commands.version import VersionCommand
+from dev_foundation.plugins.loader import PluginLoader
 
 _COMMANDS: list[type[Command]] = [
     VersionCommand,
@@ -21,7 +20,9 @@ def _plugin_commands() -> list[type[Command]]:
 
     discovered: list[type[Command]] = []
 
-    for ep in entry_points(group="dev_foundation.commands"):
+    loader = PluginLoader()
+
+    for ep in loader.discover():
         discovered.append(ep.load())
 
     return discovered
