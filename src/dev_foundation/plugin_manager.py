@@ -12,13 +12,19 @@ class PluginManager:
 
     def __init__(self) -> None:
         self.loader = PluginLoader()
-        self._plugins: list[EntryPoint] = []
+        self._entry_points: list[EntryPoint] = []
+        self._plugins: list[type] = []
 
     def discover(self) -> list[EntryPoint]:
         """Discover available plugins."""
-        self._plugins = self.loader.discover()
-        return self._plugins
+        self._entry_points = self.loader.discover()
+        return list(self._entry_points)
 
-    def plugins(self) -> list[EntryPoint]:
-        """Return discovered plugins."""
+    def load(self) -> list[type]:
+        """Load discovered plugins."""
+        self._plugins = [entry_point.load() for entry_point in self._entry_points]
+        return list(self._plugins)
+
+    def plugins(self) -> list[type]:
+        """Return loaded plugins."""
         return list(self._plugins)

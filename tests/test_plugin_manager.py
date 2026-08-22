@@ -3,6 +3,15 @@ from importlib.metadata import EntryPoint
 from dev_foundation.plugin_manager import PluginManager
 
 
+class DemoPlugin:
+    pass
+
+
+class FakeEntryPoint:
+    def load(self):
+        return DemoPlugin
+
+
 def test_discover_returns_loader_results(monkeypatch):
     manager = PluginManager()
 
@@ -23,23 +32,16 @@ def test_discover_returns_loader_results(monkeypatch):
     assert manager.discover() == expected
 
 
-def test_plugins_returns_discovered_plugins(monkeypatch):
+def test_load_returns_loaded_plugins(monkeypatch):
     manager = PluginManager()
-
-    expected = [
-        EntryPoint(
-            name="demo",
-            value="demo.plugin:Plugin",
-            group="dev_foundation.commands",
-        )
-    ]
 
     monkeypatch.setattr(
         manager.loader,
         "discover",
-        lambda: expected,
+        lambda: [FakeEntryPoint()],
     )
 
     manager.discover()
 
-    assert manager.plugins() == expected
+    assert manager.load() == [DemoPlugin]
+    assert manager.plugins() == [DemoPlugin]
