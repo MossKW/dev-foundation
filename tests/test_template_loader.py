@@ -1,14 +1,22 @@
-from importlib.resources import files
+from dev_foundation.template_loader import (
+    load_template,
+    render_template,
+)
 
 
-def render_template(template_name: str, context: dict[str, str]) -> str:
-    template = (
-        files("dev_foundation.templates")
-        .joinpath(template_name)
-        .read_text(encoding="utf-8")
+def test_load_template() -> None:
+    template = load_template("README.md")
+
+    assert "{{ project_name }}" in template
+
+
+def test_render_template() -> None:
+    rendered = render_template(
+        "README.md",
+        {
+            "project_name": "demo",
+            "package_name": "demo",
+        },
     )
 
-    for key, value in context.items():
-        template = template.replace(f"{{{{ {key} }}}}", value)
-
-    return template
+    assert "demo" in rendered

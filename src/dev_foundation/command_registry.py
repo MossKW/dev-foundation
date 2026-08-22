@@ -5,6 +5,7 @@ from __future__ import annotations
 from dev_foundation.commands.base import Command
 from dev_foundation.commands.doctor import DoctorCommand
 from dev_foundation.commands.init import InitCommand
+from dev_foundation.commands.plugins import PluginsCommand
 from dev_foundation.commands.version import VersionCommand
 from dev_foundation.plugins.loader import PluginLoader
 
@@ -12,6 +13,13 @@ _COMMANDS: list[type[Command]] = [
     VersionCommand,
     DoctorCommand,
     InitCommand,
+]
+
+_COMMANDS = [
+    VersionCommand,
+    DoctorCommand,
+    InitCommand,
+    PluginsCommand,
 ]
 
 

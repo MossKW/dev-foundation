@@ -5,6 +5,7 @@ from dev_foundation.blueprint_registry import blueprints
 from dev_foundation.command_registry import commands
 from dev_foundation.commands.doctor import DoctorCommand
 from dev_foundation.commands.init import InitCommand
+from dev_foundation.commands.plugins import PluginsCommand
 from dev_foundation.commands.version import VersionCommand
 from dev_foundation.plugins.loader import PluginLoader
 from dev_foundation.registry import BlueprintRegistry
@@ -27,10 +28,12 @@ def test_registry_names() -> None:
 def test_command_registry() -> None:
     registered = commands()
 
-    assert len(registered) == 3
+    assert len(registered) == 4
+
     assert isinstance(registered[0], VersionCommand)
     assert isinstance(registered[1], DoctorCommand)
     assert isinstance(registered[2], InitCommand)
+    assert isinstance(registered[3], PluginsCommand)
 
 
 @patch.object(PluginLoader, "discover")
@@ -42,8 +45,13 @@ def test_command_registry_plugins(mock_discover) -> None:
 
     registered = commands()
 
-    assert len(registered) == 4
-    assert isinstance(registered[-1], VersionCommand)
+    assert len(registered) == 5
+
+    assert isinstance(registered[0], VersionCommand)
+    assert isinstance(registered[1], DoctorCommand)
+    assert isinstance(registered[2], InitCommand)
+    assert isinstance(registered[3], PluginsCommand)
+    assert isinstance(registered[4], VersionCommand)
 
     mock_discover.assert_called_once()
 
