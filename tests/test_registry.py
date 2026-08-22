@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 from dev_foundation.blueprint import PythonBlueprint
+from dev_foundation.blueprint_registry import blueprints
 from dev_foundation.command_registry import commands
 from dev_foundation.commands.doctor import DoctorCommand
 from dev_foundation.commands.init import InitCommand
@@ -45,3 +46,10 @@ def test_command_registry_plugins(mock_discover) -> None:
     assert isinstance(registered[-1], VersionCommand)
 
     mock_discover.assert_called_once()
+
+
+def test_blueprint_registry() -> None:
+    registered = blueprints()
+
+    assert len(registered) == 1
+    assert isinstance(registered[0], PythonBlueprint)
