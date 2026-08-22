@@ -12,7 +12,13 @@ class PluginManager:
 
     def __init__(self) -> None:
         self.loader = PluginLoader()
+        self._plugins: list[EntryPoint] = []
 
     def discover(self) -> list[EntryPoint]:
         """Discover available plugins."""
-        return self.loader.discover()
+        self._plugins = self.loader.discover()
+        return self._plugins
+
+    def plugins(self) -> list[EntryPoint]:
+        """Return discovered plugins."""
+        return list(self._plugins)

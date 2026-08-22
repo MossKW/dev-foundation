@@ -1,15 +1,45 @@
+from importlib.metadata import EntryPoint
+
 from dev_foundation.plugin_manager import PluginManager
 
 
-def test_plugin_manager_instantiation() -> None:
+def test_discover_returns_loader_results(monkeypatch):
     manager = PluginManager()
 
-    assert manager is not None
+    expected = [
+        EntryPoint(
+            name="demo",
+            value="demo.plugin:Plugin",
+            group="dev_foundation.commands",
+        )
+    ]
+
+    monkeypatch.setattr(
+        manager.loader,
+        "discover",
+        lambda: expected,
+    )
+
+    assert manager.discover() == expected
 
 
-def test_plugin_manager_discover() -> None:
+def test_plugins_returns_discovered_plugins(monkeypatch):
     manager = PluginManager()
 
-    plugins = manager.discover()
+    expected = [
+        EntryPoint(
+            name="demo",
+            value="demo.plugin:Plugin",
+            group="dev_foundation.commands",
+        )
+    ]
 
-    assert isinstance(plugins, list)
+    monkeypatch.setattr(
+        manager.loader,
+        "discover",
+        lambda: expected,
+    )
+
+    manager.discover()
+
+    assert manager.plugins() == expected
