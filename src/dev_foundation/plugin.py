@@ -1,10 +1,10 @@
-"""Plugin API."""
+"""Plugin base protocols."""
 
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from .commands.base import Command
+from .generation_plugin import GenerationPlugin
 from .metadata import PluginMetadata
 
 
@@ -14,5 +14,14 @@ class CommandPlugin(Protocol):
 
     metadata: PluginMetadata
 
-    def load(self) -> Command:
-        """Return a command instance."""
+    def load(self) -> None:
+        """Load plugin."""
+
+
+class Plugin(GenerationPlugin):
+    """Base class for generation plugins."""
+
+    metadata: PluginMetadata
+
+    def load(self) -> None:
+        """Load plugin."""
