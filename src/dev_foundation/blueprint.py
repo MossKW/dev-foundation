@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .blueprints.base import Blueprint
 from .template_loader import render_template
+from .writer import ProjectWriter
 
 
 class PythonBlueprint(Blueprint):
@@ -23,38 +24,40 @@ class PythonBlueprint(Blueprint):
             "package_name": package_name,
         }
 
+        writer = ProjectWriter()
+
         src_dir = project_dir / "src" / package_name
         tests_dir = project_dir / "tests"
 
         src_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
 
-        (project_dir / "README.md").write_text(
+        writer.write(
+            project_dir / "README.md",
             render_template("README.md", context),
-            encoding="utf-8",
         )
 
-        (project_dir / "pyproject.toml").write_text(
+        writer.write(
+            project_dir / "pyproject.toml",
             render_template("pyproject.toml.tmpl", context),
-            encoding="utf-8",
         )
 
-        (project_dir / ".gitignore").write_text(
+        writer.write(
+            project_dir / ".gitignore",
             render_template("gitignore.txt", context),
-            encoding="utf-8",
         )
 
-        (src_dir / "__init__.py").write_text(
+        writer.write(
+            src_dir / "__init__.py",
             render_template("package_init.py.tmpl", context),
-            encoding="utf-8",
         )
 
-        (src_dir / "__main__.py").write_text(
+        writer.write(
+            src_dir / "__main__.py",
             render_template("package_main.py.tmpl", context),
-            encoding="utf-8",
         )
 
-        (tests_dir / "__init__.py").write_text(
+        writer.write(
+            tests_dir / "__init__.py",
             "",
-            encoding="utf-8",
         )
