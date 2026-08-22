@@ -1,4 +1,4 @@
-"""Platform runtime."""
+"""Runtime."""
 
 from __future__ import annotations
 
@@ -8,19 +8,10 @@ from .runtime_context import RuntimeContext
 
 
 class Runtime:
-    """Coordinates platform execution."""
+    """Application runtime."""
 
     def __init__(self) -> None:
         self.context = RuntimeContext()
-
-    def run(self) -> None:
-        """Execute the runtime lifecycle."""
-        self.startup()
-        self.discover_plugins()
-        self.register_capabilities()
-        self.validate()
-        self.dispatch()
-        self.shutdown()
 
     def startup(self) -> None:
         """Initialize the runtime."""
@@ -28,23 +19,21 @@ class Runtime:
             Lifecycle,
         ).startup()
 
-    def discover_plugins(self) -> None:
-        """Discover available plugins."""
+    def register_plugins(self) -> None:
+        """Register all plugins."""
         self.context.container.resolve(
             PluginManager,
-        ).discover()
+        ).register(self.context)
 
     def register_capabilities(self) -> None:
         """Register plugin capabilities."""
-        pass
 
-    def validate(self) -> None:
-        """Validate runtime state."""
-        pass
-
-    def dispatch(self) -> None:
-        """Dispatch the requested command."""
-        pass
+    def run(self) -> None:
+        """Run the application."""
+        self.startup()
+        self.register_plugins()
+        self.register_capabilities()
+        self.shutdown()
 
     def shutdown(self) -> None:
         """Shut down the runtime."""

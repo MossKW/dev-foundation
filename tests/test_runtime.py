@@ -26,11 +26,13 @@ def test_runtime_uses_container_services(monkeypatch):
         "startup",
         lambda: called.append("startup"),
     )
+
     monkeypatch.setattr(
         plugin_manager,
-        "discover",
-        lambda: called.append("discover"),
+        "register",
+        lambda context: called.append("register"),
     )
+
     monkeypatch.setattr(
         lifecycle,
         "shutdown",
@@ -41,6 +43,6 @@ def test_runtime_uses_container_services(monkeypatch):
 
     assert called == [
         "startup",
-        "discover",
+        "register",
         "shutdown",
     ]

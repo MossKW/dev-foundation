@@ -34,7 +34,9 @@ def test_runtime_context_contains_plugin_manager():
     context = RuntimeContext()
 
     assert isinstance(
-        context.plugin_manager,
+        context.container.resolve(
+            PluginManager,
+        ),
         PluginManager,
     )
 

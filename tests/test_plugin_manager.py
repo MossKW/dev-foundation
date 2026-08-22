@@ -1,10 +1,11 @@
-from importlib.metadata import EntryPoint
-
 from dev_foundation.plugin_manager import PluginManager
+from dev_foundation.plugins.base import BasePlugin
+from dev_foundation.runtime_context import RuntimeContext
 
 
-class DemoPlugin:
-    pass
+class DemoPlugin(BasePlugin):
+    def register(self, context: RuntimeContext) -> None:
+        pass
 
 
 class FakeEntryPoint:
@@ -12,36 +13,35 @@ class FakeEntryPoint:
         return DemoPlugin
 
 
-def test_discover_returns_loader_results(monkeypatch):
+def test_discover_returns_entry_points(monkeypatch):
     manager = PluginManager()
 
-    expected = [
-        EntryPoint(
-            name="demo",
-            value="demo.plugin:Plugin",
-            group="dev_foundation.commands",
-        )
-    ]
+    fake = FakeEntryPoint()
 
     monkeypatch.setattr(
         manager.loader,
         "discover",
-        lambda: expected,
+        lambda: [fake],
     )
 
-    assert manager.discover() == expected
+    assert manager.discover() == [fake]
 
 
 def test_load_returns_loaded_plugins(monkeypatch):
     manager = PluginManager()
 
+    fake = FakeEntryPoint()
+
     monkeypatch.setattr(
         manager.loader,
         "discover",
-        lambda: [FakeEntryPoint()],
+        lambda: [fake],
     )
 
-    manager.discover()
+    plugins = manager.load()
 
-    assert manager.load() == [DemoPlugin]
-    assert manager.plugins() == [DemoPlugin]
+    assert len(plugins) == 1
+    assert isinstance(
+        plugins[0],
+        DemoPlugin,
+    )
