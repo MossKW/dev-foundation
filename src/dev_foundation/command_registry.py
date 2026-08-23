@@ -7,7 +7,7 @@ from dev_foundation.commands.doctor import DoctorCommand
 from dev_foundation.commands.init import InitCommand
 from dev_foundation.commands.plugins import PluginsCommand
 from dev_foundation.commands.version import VersionCommand
-from dev_foundation.plugins.loader import PluginLoader
+from dev_foundation.plugin_registry import PluginRegistry
 
 
 class CommandRegistry:
@@ -20,12 +20,19 @@ class CommandRegistry:
         PluginsCommand,
     )
 
+    def __init__(self) -> None:
+        self.registry = PluginRegistry()
+
     def plugin_commands(self) -> list[type[Command]]:
-        """Load command plugins from entry points."""
+        """Load command plugins."""
 
-        loader = PluginLoader()
+        commands: list[type[Command]] = []
 
-        return [entry_point.load() for entry_point in loader.discover()]
+        for plugin in self.registry.plugin_types():
+            if issubclass(plugin, Command):
+                commands.append(plugin)
+
+        return commands
 
     def command_types(self) -> list[type[Command]]:
         """Return all available command types."""

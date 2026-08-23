@@ -1,41 +1,30 @@
 from dev_foundation.plugin_manager import PluginManager
-from dev_foundation.plugins.base import BasePlugin
-from dev_foundation.runtime_context import RuntimeContext
 
 
-class DemoPlugin(BasePlugin):
-    def register(self, context: RuntimeContext) -> None:
+class DemoPlugin:
+    def register(self, context):
         pass
 
 
-class FakeEntryPoint:
-    def load(self):
-        return DemoPlugin
-
-
-def test_discover_returns_entry_points(monkeypatch):
+def test_discover(monkeypatch):
     manager = PluginManager()
 
-    fake = FakeEntryPoint()
-
     monkeypatch.setattr(
-        manager.loader,
-        "discover",
-        lambda: [fake],
+        manager.registry,
+        "plugin_types",
+        lambda: [DemoPlugin],
     )
 
-    assert manager.discover() == [fake]
+    assert manager.discover() == [DemoPlugin]
 
 
-def test_load_returns_loaded_plugins(monkeypatch):
+def test_load(monkeypatch):
     manager = PluginManager()
 
-    fake = FakeEntryPoint()
-
     monkeypatch.setattr(
-        manager.loader,
-        "discover",
-        lambda: [fake],
+        manager.registry,
+        "plugins",
+        lambda: [DemoPlugin()],
     )
 
     plugins = manager.load()

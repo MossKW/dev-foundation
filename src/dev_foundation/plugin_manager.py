@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from importlib.metadata import EntryPoint
 from typing import TYPE_CHECKING
 
+from .plugin_registry import PluginRegistry
 from .plugins.base import BasePlugin
-from .plugins.loader import PluginLoader
 
 if TYPE_CHECKING:
     from .runtime_context import RuntimeContext
@@ -16,23 +15,15 @@ class PluginManager:
     """Manage plugin discovery and registration."""
 
     def __init__(self) -> None:
-        self.loader = PluginLoader()
-        self.entry_points: list[EntryPoint] = []
+        self.registry = PluginRegistry()
 
-    def discover(self) -> list[EntryPoint]:
+    def discover(self) -> list[type[BasePlugin]]:
         """Discover available plugins."""
-        self.entry_points = self.loader.discover()
-        return self.entry_points
+        return self.registry.plugin_types()
 
     def load(self) -> list[BasePlugin]:
         """Load discovered plugins."""
-        plugins: list[BasePlugin] = []
-
-        for entry_point in self.discover():
-            plugin = entry_point.load()()
-            plugins.append(plugin)
-
-        return plugins
+        return self.registry.plugins()
 
     def register(
         self,
